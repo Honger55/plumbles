@@ -152,6 +152,30 @@ details p{font-size:.84rem;line-height:1.55;color:var(--muted);margin:10px 0 0}
   .app[data-mode="studio"] .panel{overflow-y:auto;max-height:100%}
   .bubble{width:72px;height:72px}
 }
+/* ---- phones and small tablets: the toy fills the screen; Studio settings live in a slide-up sheet ---- */
+.toolbar,.sheet-head,#setBtn,.scrim{display:none}
+.fs-btn .fs-off{display:none}.fs-btn[aria-pressed="true"] .fs-on{display:none}.fs-btn[aria-pressed="true"] .fs-off{display:inline}
+.chud .fs-btn{flex:0 0 auto}
+@media (max-width:939px){
+  body{padding-inline:0}
+  .app{padding-block:0;gap:0}
+  .app[data-mode="studio"]{height:100%;min-height:0;grid-template-rows:minmax(0,1fr)}
+  .stage,.app[data-mode="studio"] .stage{height:auto;border:0;border-radius:0;box-shadow:none}
+  #setBtn{display:grid}
+  .toolbar{display:flex;position:absolute;left:0;right:0;bottom:0;padding:10px 12px calc(12px + env(safe-area-inset-bottom,0px));gap:12px;justify-content:center;z-index:3}
+  .app[data-mode="studio"] .hint{bottom:calc(88px + env(safe-area-inset-bottom,0px));transition:opacity .5s}
+  .hint.faded{opacity:0}
+  .chbar{bottom:calc(14px + env(safe-area-inset-bottom,0px))}
+  .panel{position:fixed;left:0;right:0;bottom:0;z-index:21;max-height:62vh;overflow-y:auto;overscroll-behavior:contain;border-radius:24px 24px 0 0;border-bottom:0;box-shadow:0 -4px 0 var(--line);
+    padding-bottom:calc(18px + env(safe-area-inset-bottom,0px));transform:translateY(105%);visibility:hidden;transition:transform .28s cubic-bezier(.2,.8,.2,1),visibility 0s linear .28s}
+  .panel.open{transform:none;visibility:visible;transition:transform .28s cubic-bezier(.2,.8,.2,1),visibility 0s}
+  .sheet-head{display:flex;justify-content:space-between;align-items:center;position:sticky;top:-16px;margin:-16px -16px 0;padding:16px 16px 10px;background:var(--panel);z-index:1;border-bottom:2px dashed var(--soft)}
+  .sheet-head .grab{position:absolute;top:6px;left:50%;width:44px;height:5px;border-radius:3px;background:var(--soft);transform:translateX(-50%)}
+  .scrim{position:fixed;inset:0;z-index:20;background:rgba(10,8,20,.25)}
+  .scrim.open{display:block}
+}
+@media (max-width:560px){.pill.vol{display:none}}
+@media (prefers-reduced-motion: reduce){.panel,.panel.open,.hint{transition:none}}
 /* ---- challenge: night lab ---- */
 body.challenge{--bg:#0E0C1D;--bg2:#161330;--panel:#211C3F;--ink:#F4F1FF;--muted:#A9A2CF;--line:#04030A;--soft:#2E2856;--accent:#FF5C8A;--accent-ink:#FFFFFF;--sun:#FFD166;--mint:#46D3B4;
   --sky:#141130;--check:#46D3B4;--check-bg:#141130;--shadow-a:0.5;color-scheme:dark}
@@ -223,15 +247,18 @@ body.challenge{--bg:#0E0C1D;--bg2:#161330;--panel:#211C3F;--ink:#F4F1FF;--muted:
     <div class="hud studio-only">
       <div class="hud-left">
         <button class="icon-btn" id="homeBtn" type="button" aria-label="Back to start"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11l8-7 8 7"/><path d="M6 10v9h12v-9"/></svg></button>
+        <button class="icon-btn" id="setBtn" type="button" aria-label="Settings" aria-expanded="false" aria-controls="panel"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
+        <button class="icon-btn fs-btn" type="button" aria-label="Full screen" aria-pressed="false" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path class="fs-on" d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/><path class="fs-off" d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/></svg></button>
         <p class="logo">Plumbles</p>
       </div>
       <div class="pills">
         <span class="pill">squishes <b id="sCount">0</b></span>
         <span class="pill">rise <b id="sRise">0.0s</b></span>
         <span class="pill">pieces <b id="sPieces">1</b></span>
-        <span class="pill">volume <b id="sVol">100%</b></span>
+        <span class="pill vol">volume <b id="sVol">100%</b></span>
       </div>
     </div>
+    <div class="toolbar studio-only" id="toolbar" role="toolbar" aria-label="Tools"></div>
     <p class="hint studio-only" id="hint"><b>Poke</b>Press and hold to sink a finger in, then let go.</p>
 
     <button class="icon-btn lock little-only" id="lockBtn" type="button" aria-label="Grown-ups: hold for 2 seconds to leave"><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><rect x="5" y="10" width="14" height="10" rx="3"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></span><small>hold</small></button>
@@ -239,6 +266,7 @@ body.challenge{--bg:#0E0C1D;--bg2:#161330;--panel:#211C3F;--ink:#F4F1FF;--muted:
 
     <div class="chud challenge-only">
       <button class="icon-btn" id="chLevels" type="button" aria-label="All levels"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><rect x="4" y="4" width="6" height="6" rx="1.5"/><rect x="14" y="4" width="6" height="6" rx="1.5"/><rect x="4" y="14" width="6" height="6" rx="1.5"/><rect x="14" y="14" width="6" height="6" rx="1.5"/></svg></button>
+      <button class="icon-btn fs-btn" type="button" aria-label="Full screen" aria-pressed="false" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path class="fs-on" d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/><path class="fs-off" d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/></svg></button>
       <div class="chgoal"><p class="chtitle" id="chTitle"></p><p class="chbrief" id="chBrief"></p></div>
       <div class="chstats">
         <div class="meter" id="chMeterBox"><span class="k" id="chMeterK">score</span><b id="chMeter">--</b></div>
@@ -275,7 +303,9 @@ body.challenge{--bg:#0E0C1D;--bg2:#161330;--panel:#211C3F;--ink:#F4F1FF;--muted:
     <p class="toast" id="toast" hidden></p>
   </section>
 
-  <aside class="panel studio-only" aria-label="Studio controls">
+  <div class="scrim studio-only" id="scrim"></div>
+  <aside class="panel studio-only" id="panel" aria-label="Studio settings">
+    <div class="sheet-head"><span class="grab"></span><span class="lbl">Settings</span><button class="icon-btn" id="sheetClose" type="button" aria-label="Close settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
     <div class="field">
       <div class="lbl">Tool</div>
       <div class="seg four" role="group" aria-label="Tool" id="toolSeg"></div>
@@ -1107,7 +1137,7 @@ function resize() {
   const little = mode === 'little';
   cam.dist = (little ? 6.8 : 7.6) * Math.pow(Math.max(1, 1.25 / camera.aspect), .9);
   cam.target.y = little ? .5 : (w < 560 ? .5 : .62);
-  placeCamera();
+  placeCamera(); if (typeof applyViewOffset === 'function') applyViewOffset();
   const dpr = Math.min(2, window.devicePixelRatio || 1);
   fx.width = Math.round(w * dpr); fx.height = Math.round(h * dpr); fxCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
 }
@@ -1528,12 +1558,14 @@ const hints = {
   knife: '<b>Knife</b>Swipe a line across it. The knife chops along your line.'
 };
 let hintTimer = 0;
-function flashHint(msg) { $('hint').innerHTML = '<b>Hmm</b>' + msg; clearTimeout(hintTimer); hintTimer = setTimeout(() => $('hint').innerHTML = hints[S.tool], 3500); }
+let hintFadeT = 0;
+function showHint() { const h = $('hint'); h.classList.remove('faded'); clearTimeout(hintFadeT); hintFadeT = setTimeout(() => h.classList.add('faded'), 4000); }
+function flashHint(msg) { $('hint').innerHTML = '<b>Hmm</b>' + msg; showHint(); clearTimeout(hintTimer); hintTimer = setTimeout(() => $('hint').innerHTML = hints[S.tool], 3500); }
 function setTool(t) {
   endAllTools();
   S.tool = t; if (mode === 'studio') store.set('tool', t);
   document.querySelectorAll('[data-tool]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.tool === t)));
-  $('hint').innerHTML = hints[t];
+  $('hint').innerHTML = hints[t]; showHint();
   view.style.cursor = t === 'knife' ? 'crosshair' : '';
 }
 const toolSeg = $('toolSeg');
@@ -1612,7 +1644,7 @@ function setMode(m) {
   appEl.dataset.mode = m; $('start').hidden = true;
   document.body.classList.toggle('challenge', m === 'challenge'); themeKey = ''; readTheme();
   $('result').hidden = true; $('levels').hidden = true; CH.def = null;
-  document.body.classList.toggle('scroll', m === 'studio' && innerWidth < 940);
+  document.body.classList.remove('scroll'); closeSheet(true);
   endAllTools();
   if (m === 'little') {
     S.firm = .35; S.rise = .32; S.mat = 'jelly'; S.finish = 'jelly'; S.sound = true; S.paused = false; S.quarter = false; littleCount = 0;
@@ -1635,7 +1667,7 @@ function setMode(m) {
 function goStart() {
   endAllTools(); CH.def = null;
   document.body.classList.remove('challenge'); themeKey = ''; readTheme();
-  $('start').hidden = false;
+  closeSheet(true); $('start').hidden = false;
   const last = store.get('mode', 'little'), cards = { little: $('goLittle'), studio: $('goStudio'), challenge: $('goChallenge') };
   for (const k in cards) cards[k].classList.toggle('last', last === k);
   (cards[last] || cards.little).focus();
@@ -1643,6 +1675,47 @@ function goStart() {
 $('goLittle').onclick = () => setMode('little');
 $('goStudio').onclick = () => setMode('studio');
 $('goChallenge').onclick = () => setMode('challenge');
+
+/* ================= full screen button (hidden where the browser does not allow it, like iPhone Safari) ================= */
+const fsEl = () => document.fullscreenElement || document.webkitFullscreenElement;
+const fsOK = !!(document.fullscreenEnabled || document.webkitFullscreenEnabled);
+function toggleFullscreen() {
+  const d = document.documentElement;
+  try {
+    if (fsEl()) (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+    else { const r = (d.requestFullscreen || d.webkitRequestFullscreen).call(d, { navigationUI: 'hide' }); if (r && r.catch) r.catch(() => {}); }
+  } catch (e) {}
+}
+const standalone = matchMedia('(display-mode: standalone)').matches || matchMedia('(display-mode: fullscreen)').matches || navigator.standalone === true;
+document.querySelectorAll('.fs-btn').forEach(b => { b.hidden = !fsOK || standalone; b.onclick = toggleFullscreen; });
+const syncFs = () => { const on = !!fsEl(); document.querySelectorAll('.fs-btn').forEach(b => { b.setAttribute('aria-pressed', String(on)); b.setAttribute('aria-label', on ? 'Exit full screen' : 'Full screen'); }); requestAnimationFrame(resize); };
+document.addEventListener('fullscreenchange', syncFs); document.addEventListener('webkitfullscreenchange', syncFs);
+
+/* ================= phone settings sheet ================= */
+let sheetOpen = false;
+const panelEl = $('panel'), scrimEl = $('scrim'), setBtn = $('setBtn');
+const isSheet = () => innerWidth < 940;
+function applyViewOffset() {
+  const r = view.getBoundingClientRect();
+  if (sheetOpen && isSheet()) { const off = Math.min(panelEl.offsetHeight, r.height * .7) * .5; camera.setViewOffset(r.width, r.height, 0, off, r.width, r.height); }
+  else camera.clearViewOffset();
+}
+function openSheet() {
+  if (!isSheet()) return; endAllTools();
+  sheetOpen = true; panelEl.classList.add('open'); scrimEl.classList.add('open'); setBtn.setAttribute('aria-expanded', 'true');
+  requestAnimationFrame(applyViewOffset); setTimeout(() => $('sheetClose').focus({ preventScroll: true }), 60);
+}
+function closeSheet(silent) {
+  const was = sheetOpen; sheetOpen = false; panelEl.classList.remove('open'); scrimEl.classList.remove('open'); setBtn.setAttribute('aria-expanded', 'false');
+  applyViewOffset(); if (was && !silent) setBtn.focus({ preventScroll: true });
+}
+setBtn.onclick = () => sheetOpen ? closeSheet() : openSheet();
+$('sheetClose').onclick = () => closeSheet(); scrimEl.onclick = () => closeSheet();
+const toolbar = $('toolbar');
+for (const t of ['poke', 'grab', 'roll', 'knife']) {
+  const b = document.createElement('button'); b.type = 'button'; b.className = 'bubble'; b.dataset.tool = t; b.setAttribute('aria-label', TOOL_NAMES[t]);
+  b.innerHTML = ICON[t]; b.onclick = () => { ensureAudio(); sndChirp(); setTool(t); }; toolbar.appendChild(b);
+}
 
 /* ================= challenge mode ================= */
 const LEVELS = [
@@ -1853,7 +1926,7 @@ function frame(now) {
 }
 
 new ResizeObserver(resize).observe(view);
-addEventListener('resize', () => document.body.classList.toggle('scroll', mode === 'studio' && innerWidth < 940));
+addEventListener('keydown', e => { if (e.key === 'Escape' && sheetOpen) closeSheet(); });
 readTheme(); resize();
 applyVariety(false);
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change', readTheme);
